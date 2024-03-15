@@ -5,6 +5,4 @@ result = ''
 
 for i in num_list:
     if i < x:
-        result += str(i) + ' '
-
-print(result)
+        print(i)

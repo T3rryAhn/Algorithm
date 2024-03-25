@@ -1,6 +1,6 @@
 # 50     30 24 5 28   45   98 52 60
 import sys
-sys.setrecursionlimit(10**9)
+sys.setrecursionlimit(10**5)
 
 
 def solve(arr: list):

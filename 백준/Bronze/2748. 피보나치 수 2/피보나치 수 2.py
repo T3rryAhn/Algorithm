@@ -1,13 +1,10 @@
-from functools import lru_cache
-
 n = int(input())
 
+fibo = [None for _ in range(n + 1)]
+fibo[0] = 0
+fibo[1] = 1
 
-@lru_cache(maxsize=None)
-def f(n):
-    if n < 2:
-        return n
-    return f(n - 1) + f(n - 2)
+for i in range(2, n + 1):
+    fibo[i] = fibo[i - 2] + fibo[i - 1]
 
-
-print(f(n))
+print(fibo[n])

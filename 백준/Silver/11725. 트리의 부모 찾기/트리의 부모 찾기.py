@@ -1,30 +1,24 @@
 import sys
-from collections import deque
+sys.setrecursionlimit(10**8)
 
 n = int(sys.stdin.readline())
-nodes = [[] for _ in range(n + 1)]
-visited = [False] * (n + 1)
-parent_table = [i for i in range(n + 1)]
-
+node = [[] for _ in range(n + 1)]
 for _ in range(n - 1):
-    node_a, node_b = map(int, sys.stdin.readline().split())
-    nodes[node_a].append(node_b)
-    nodes[node_b].append(node_a)
+    a, b = map(int, sys.stdin.readline().split())
+    node[a].append(b)
+    node[b].append(a)
 
+parent_table = [i for i in range(n + 1)]
+visited = [False for _ in range(n + 1)]
 
-def bfs(root: int) -> None:
-    queue = deque()
-    queue.append(root)
+def dps(n):
+    for next in node[n]:
+        if not visited[next]:
+            visited[next] = True
+            parent_table[next] = n
+            dps(next)
 
-    while queue:
-        node = int(queue.popleft())
-        visited[node] = True
-        for n_node in nodes[node]:
-            if not visited[n_node]:
-                parent_table[n_node] = node
-                queue.append(n_node)
+dps(1)
 
-
-bfs(1)
-for i in range(2, n + 1):
-    print(parent_table[i])
+for i in parent_table[2:]:
+    print(i)

@@ -17,3 +17,5 @@ while K != A:
             count += 1
 
 print(count)
+
+# K 에서 거꾸로 A로 연산해 나가는 방법으로 한다면 bfs, dfs, dp 필요없음

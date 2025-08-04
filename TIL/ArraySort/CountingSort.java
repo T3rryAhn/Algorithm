@@ -28,7 +28,7 @@ public class CountingSort {
 			count[i] += count[i - 1];
 		}
 		
-		// 역방향으로 원본 순회하면서 정렬 시작 안정정렬
+		// 역방향으로 원본 순회하면서 정렬 시작 [안정정렬]
 		int[] sortArr = new int[arr.length];
 		for (int i = arr.length - 1; i >= 0; i--) {
 			sortArr[--count[arr[i]]] = arr[i];

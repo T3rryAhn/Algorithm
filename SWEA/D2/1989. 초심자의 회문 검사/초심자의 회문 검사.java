@@ -9,7 +9,7 @@ public class Solution {
         for (int caseNum = 1; caseNum <= T; caseNum++) {
             String str = sc.nextLine();
             boolean isPalin = true;
-            for (int i = 0; i < str.length(); i++) {
+            for (int i = 0; i < str.length() / 2; i++) {
                 if (str.charAt(i) != str.charAt(str.length() - 1 - i)) {
                     isPalin = false;
                     System.out.printf("#%d %d%n", caseNum, 0);

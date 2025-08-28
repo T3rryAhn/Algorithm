@@ -11,10 +11,7 @@ public class Solution {
 
             boolean isOn = false;
 
-            int a = 0;
-            for (int i = 0; i < N; i++) {
-                a += 1 << i;
-            }
+            int a = (1 << N) - 1;
 
             isOn = (a & M) == a;
 

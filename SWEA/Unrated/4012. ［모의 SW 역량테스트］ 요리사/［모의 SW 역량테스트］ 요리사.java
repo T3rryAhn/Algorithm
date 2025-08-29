@@ -1,4 +1,5 @@
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class Solution {
 
             minPoint = Integer.MAX_VALUE;
 
-            selectItems(new ArrayList<Integer>(), 0);
+            selectItems(new ArrayList<Integer>(), 0, 0);
 
             System.out.println("#"+tc+" "+minPoint);
             // case end
@@ -38,12 +39,12 @@ public class Solution {
 
     }
 
-    static void selectItems(List<Integer> foodA, int idx) {
+    static void selectItems(List<Integer> foodA, int idx, int foodAcheckBit) {
         // 종료.
         if(foodA.size() == N / 2) {
             List<Integer> foodB = new ArrayList<>();
             for (int i = 0; i < N; i++) {
-                if(foodA.contains(i))
+                if((foodAcheckBit & (1 << i)) != 0)
                     continue;
                 foodB.add(i);
             }
@@ -74,12 +75,14 @@ public class Solution {
             return;
 
         // 재료[idx] 뽑았을경우
+        foodAcheckBit |= (1 << idx);
         foodA.add(idx);
-        selectItems(foodA, idx + 1);
+        selectItems(foodA, idx + 1, foodAcheckBit);
 
         // 재료[idx] 안뽑았을 경우
+        foodAcheckBit ^= (1 << idx);
         foodA.remove(foodA.size() - 1);
-        selectItems(foodA, idx + 1);
+        selectItems(foodA, idx + 1, foodAcheckBit);
     }
 
 }

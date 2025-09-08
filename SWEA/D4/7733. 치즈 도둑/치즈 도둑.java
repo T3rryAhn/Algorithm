@@ -6,8 +6,7 @@ import java.util.*;
 public class Solution {
     static int N;
     static int[][] cheese;
-    static boolean[][] visited;
-    static boolean[][] dayVisited;  // this is for record fairy eatten
+    static int[][] visited;
 
     // 4 ways. up down left right
     static int[] dr = { -1, 1, 0, 0 };
@@ -23,7 +22,7 @@ public class Solution {
             // case start
             N = sc.nextInt();
             cheese = new int[N][N];
-            dayVisited = new boolean[N][N];
+            visited = new int[N][N];
 
             for (int r = 0; r < N; r++) {
                 for (int c = 0; c < N; c++) {
@@ -31,8 +30,8 @@ public class Solution {
                 }
             }
 
-            int maxPiece = 0;
-            for (int day = 0; day <= 100; day++) {
+            int maxPiece = 1;
+            for (int day = 1; day <= 100; day++) {
                 // day world start
                 int pieceCnt = 0;
 
@@ -40,21 +39,16 @@ public class Solution {
                 for (int r = 0; r < N; r++) {
                     for (int c = 0; c < N; c++) {
                         if (cheese[r][c] == day) {
-                            dayVisited[r][c] = true;
+                            visited[r][c] = day;
                         }
                     }
-                }
-
-                visited = new boolean[N][];
-                for(int i = 0; i < N; i++) {
-                    visited[i] = Arrays.copyOf(dayVisited[i], N);
                 }
 
                 // count piece
                 for (int r = 0; r < N; r++) {
                     for (int c = 0; c < N; c++) {
-                        if (!visited[r][c]) {
-                            bfs(r, c);
+                        if (visited[r][c] < day && cheese[r][c] > day) {
+                            bfs(r, c, day);
                             pieceCnt++;
                         }
                     }
@@ -74,11 +68,11 @@ public class Solution {
         return r >= 0 && r < N && c >= 0 && c < N;
     }
 
-    static void bfs(int r, int c) {
+    static void bfs(int r, int c, int day) {
         Queue<int[]> q = new ArrayDeque<>();
 
         q.add(new int[] { r, c });
-        visited[r][c] = true;
+        visited[r][c] = day;
 
         while (!q.isEmpty()) {
             int[] curr = q.poll();
@@ -89,9 +83,9 @@ public class Solution {
                 int nr = cr + dr[d];
                 int nc = cc + dc[d];
                 
-                if(isInBound(nr, nc) && !visited[nr][nc]) {
+                if(isInBound(nr, nc) && visited[nr][nc] < day && cheese[nr][nc] > day) {
                     q.add(new int[] {nr, nc});
-                    visited[nr][nc] = true;
+                    visited[nr][nc] = day;
                 }
             }
         }

@@ -14,8 +14,8 @@ public class Solution {
     static int[] dc = { -1, 0, 1, -1, 1, -1, 0, 1 };
 
     public static void main(String[] args) throws FileNotFoundException {
-        //File file = new File("playground\\_1868_파핑파핑\\input.txt");
-        //Scanner sc = new Scanner(file);
+        // File file = new File("playground\\_1868_파핑파핑\\input.txt");
+        // Scanner sc = new Scanner(file);
         Scanner sc = new Scanner(System.in);
 
         int T = sc.nextInt();
@@ -25,7 +25,6 @@ public class Solution {
             table = new int[N][N];
             originTable = new char[N][N];
             visited = new boolean[N][N];
-            Queue<int[]> clickQueue = new ArrayDeque<>();
 
             // input
             for (int r = 0; r < N; r++) {
@@ -35,7 +34,6 @@ public class Solution {
                 }
             }
 
-            List<int[]> tmpList = new ArrayList<>();
             // make calculated table
             for (int r = 0; r < N; r++) {
                 for (int c = 0; c < N; c++) {
@@ -61,28 +59,27 @@ public class Solution {
                         }
                     }
                     table[r][c] = bombCnt;
-                    tmpList.add(new int[] {bombCnt, r, c});
                 }
             }
 
-            // sort clickQ
-            tmpList.sort((o1, o2) -> o1[0] - o2[0]);
-            clickQueue = new ArrayDeque<>(tmpList);
             int clickCnt = 0;
 
-            while(!clickQueue.isEmpty()) {
-                int[] curr = clickQueue.poll();
-                // int bombCnt = curr[0];
-                int r = curr[1];
-                int c = curr[2];
+            for (int r = 0; r < N; r++) {
+                for (int c = 0; c < N; c++) {
+                    if (table[r][c] == 0 && !visited[r][c]) {
+                        bfs(r, c);
+                        clickCnt++;
+                    }
+                }
+            }
 
-                if (visited[r][c]) continue;
-
-                bfs(r, c);
-
-                clickCnt++;
-
-
+            for (int r = 0; r < N; r++) {
+                for (int c = 0; c < N; c++) {
+                    if (table[r][c] > 0 && !visited[r][c]) {
+                        bfs(r, c);
+                        clickCnt++;
+                    }
+                }
             }
 
             System.out.printf("#%d %d%n", tc, clickCnt);
@@ -100,28 +97,29 @@ public class Solution {
     static void bfs(int r, int c) {
         Queue<int[]> bfsQueue = new ArrayDeque<>();
 
-        bfsQueue.add(new int[] {r, c});
+        bfsQueue.add(new int[] { r, c });
 
-        while(!bfsQueue.isEmpty()) {
+        while (!bfsQueue.isEmpty()) {
             int[] curr = bfsQueue.poll();
             int cr = curr[0];
             int cc = curr[1];
 
             visited[cr][cc] = true;
-            if(table[cr][cc] != 0) continue;
-            
-            for(int d = 0; d < 8; d++) {
+            if (table[cr][cc] != 0)
+                continue;
+
+            for (int d = 0; d < 8; d++) {
                 int nr = cr + dr[d];
                 int nc = cc + dc[d];
-                
-                if(isInBound(nr, nc) && !visited[nr][nc]) {
+
+                if (isInBound(nr, nc) && !visited[nr][nc]) {
                     visited[nr][nc] = true;
 
-                    if(table[nr][nc] == 0) {
-                        bfsQueue.add(new int[] {nr, nc});
+                    if (table[nr][nc] == 0) {
+                        bfsQueue.add(new int[] { nr, nc });
                     }
                 }
-            }//for
-        }//while
+            } // for
+        } // while
     }// bfs
 }

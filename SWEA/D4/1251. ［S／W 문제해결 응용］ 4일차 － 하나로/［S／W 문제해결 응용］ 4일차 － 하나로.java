@@ -2,98 +2,89 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Solution {
-    static class Edge {
-        int start, end;
-        long cost;
+	static int N;
+	static boolean[] visited;
+	static long[] minCost;
+	static long[] xs, ys;
 
-        Edge(int start, int end, long cost) {
-            this.start = start;
-            this.end = end;
-            this.cost = cost;
-        }
-    }
+	static final long INF = Long.MAX_VALUE;
 
-    static int[] rep;
+	public static void main(String[] args) throws FileNotFoundException {
+//		File file = new File("src/swea/_1251_하나로_프림/re_sample_input.txt");
+//		Scanner sc = new Scanner(file);
+		Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) throws FileNotFoundException {
-        // File file = new File("playground\\_1251_하나로\\re_sample_input.txt");
-        // Scanner sc = new Scanner(file);
-        Scanner sc = new Scanner(System.in);
+		int T = sc.nextInt();
+		for (int tc = 1; tc <= T; tc++) {
+			// case start
+			N = sc.nextInt();
 
-        int T = sc.nextInt();
-        for (int tc = 1; tc <= T; tc++) {
-            // case start
-            int N = sc.nextInt();
-            rep = new int[N];
+			// 초기화
+			visited = new boolean[N];
+			xs = new long[N];
+			ys = new long[N];
+			minCost = new long[N];
+			Arrays.fill(minCost, INF);
 
-            for (int i = 1; i < N; i++) {
-                rep[i] = i;
-            }
+			// input
+			for (int i = 0; i < N; i++) {
+				xs[i] = sc.nextLong();
+			}
+			for (int i = 0; i < N; i++) {
+				ys[i] = sc.nextLong();
+			}
+			double E = sc.nextDouble();
 
-            int[][] nodes = new int[N][2];
+			long sum = prim(0);
+			long answer = Math.round(sum * E);
+			
+			System.out.printf("#%d %d%n", tc, answer);
+			// case end
+		}
 
-            List<Edge> edges = new ArrayList<Edge>();
+	}
 
-            for (int i = 0; i < N; i++) {
-                nodes[i][0] = sc.nextInt();
-            }
-            for (int i = 0; i < N; i++) {
-                nodes[i][1] = sc.nextInt();
-            }
+	static long prim(int start) {
+		minCost[start] = 0;
+		long sum = 0;
 
-            double E = sc.nextDouble();
+		for (int i = 0; i < N; i++) {
+			int u = -1;
+			long min = INF;
+			for (int v = 0; v < N; v++) {
+				// MST에 아직 안 들어간 정점 중에서 값이 제일 작은 정점 u 선택
+				if (!visited[v] && minCost[v] < min) {
+					min = minCost[v];
+					u = v;
+				}
+			}
 
-            for (int i = 0; i < N - 1; i++) {
-                for (int j = i + 1; j < N; j++) {
-                    long x = nodes[i][0] - nodes[j][0];
-                    long y = nodes[i][1] - nodes[j][1];
-                    long d = x * x + y * y;
-                    long w = d;
+			// u 를 mst에 포함
+			visited[u] = true;
+			sum += minCost[u];
 
-                    edges.add(new Edge(i, j, w));
-                }
-            }
+			for (int v = 0; v < N; v++) {
+				if (!visited[v]) {
+					long w = dist2(u, v);
+					if (w < minCost[v]) {
+						minCost[v] = w;
+					}
+				}
+			}
+		}
+		
+		return sum;
 
-            edges.sort(Comparator.comparingLong(o1 -> o1.cost));
+	}
 
-            long total = 0;
-            int pick = 0;
-            for (Edge e : edges) {
-                if (pick == N - 1) {
-                    break;
-                }
+	static long dist2(int a, int b) {
+		long dx = xs[a] - xs[b];
+		long dy = ys[a] - ys[b];
+		return dx * dx + dy * dy;
+	}
 
-                if (find(e.start) == find(e.end)) {
-                    continue;
-                }
-                pick++;
-                union(e.start, e.end);
-
-                total += e.cost;
-            }
-
-            long answer = Math.round(E * total);
-
-            System.out.printf("#%d %d%n", tc, answer);
-            // case end
-        }
-
-    }// main
-
-    static void union(int a, int b) {
-        rep[find(b)] = find(a);
-    }
-
-    static int find(int a) {
-        if (rep[a] == a)
-            return a;
-
-        return rep[a] = find(rep[a]);
-    }
 }

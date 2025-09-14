@@ -1,94 +1,87 @@
 
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.Scanner;
 
 public class Solution {
-	static int N;
-	static int rowAndColUsedBit;
-	static long diagonalUsedBit;
-	static int count;
-	
-	// 왼위, 위, 오른위
-	static int[] dr = {-1, -1, -1};
-	static int[] dc = {-1, 0, 1};
+    static int N;
+    static int count;
 
-	public static void main(String[] args) throws FileNotFoundException {
-//		File file = new File("./src/swea/_2806_nQueen/sample_input (6).txt");
-//		Scanner sc = new Scanner(file);
-		Scanner sc = new Scanner(System.in);
-		
-		int T = sc.nextInt();
-		for(int tc = 1; tc <= T; tc++ ) {
-			// case start
-			N = sc.nextInt();
-			rowAndColUsedBit = 0;
-			diagonalUsedBit = 0L;
-			count = 0;
+    // [0 ..  9] : 열 사용
+    // [10.. 29] : \ 대각 (r - c + (N-1))
+    // [30.. 49] : / 대각 (r + c)
+    static final int COL_BASE  = 0;
+    static final int D1_BASE   = 10;
+    static final int D2_BASE   = 30;
 
-			dfs(0);
-			
-			System.out.println("#" + tc + " " + count);
-			// case end
-		}
-	}// main
-	
-	static void dfs(int r) {
-		if(r == N) {
-			count++;
-			return;
-		}
-		
-		for(int c = 0; c < N; c++) {
-			if(checkPosByBit(r, c)) {
-				markPosOnBit(r, c);
-				dfs(r + 1);
-				unMarkPosOnBit(r, c);
-			}
-		}
-		
-	}
-	
-	static void unMarkPosOnBit(int r, int c) {
-		// 32 칸중 절반 0 - 15 는 row, 16 - 31 는 col
-		rowAndColUsedBit ^= (1 << r);
-		rowAndColUsedBit ^= ((1 << 16) << c);
-		
-		// 64칸중 0 - 31 왼위 대각선, 32-63 오른위 대각선
-		int dia1Idx = r - c + (N - 1);
-		int dia2Idx = r + c;
-		diagonalUsedBit ^= (1L << dia1Idx);
-		diagonalUsedBit ^= ((1L << 32) << dia2Idx);
-		
-	}
-	
-	
-	static void markPosOnBit(int r, int c) {
-		// 32 칸중 절반 0 - 15 는 row, 16 - 31 는 col
-		rowAndColUsedBit |= (1 << r);
-		rowAndColUsedBit |= ((1 << 16) << c);
-		
-		// 64칸중 0 - 31 왼위 대각선, 32-63 오른위 대각선
-		int dia1Idx = r - c + (N - 1);
-		int dia2Idx = r + c;
-		diagonalUsedBit |= (1L << dia1Idx);
-		diagonalUsedBit |= ((1L << 32) << dia2Idx);
-		
-	}
-	
-	static boolean checkPosByBit(int r, int c) {
-		int queryBit = (1 << r) + ((1 << 16) << c);
-		int dia1Idx = r - c + (N - 1);
-		int dia2Idx = r + c;
-		long queryBit2 = (1L << dia1Idx) + ((1L << 32) << dia2Idx);
-		
-		if((rowAndColUsedBit & queryBit) == 0 && (diagonalUsedBit & queryBit2) == 0) {
-			return true;
-		}
-		
-		return false;
-	}
-	
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner sc = new Scanner(System.in);
 
+        int T = sc.nextInt();
+        for (int tc = 1; tc <= T; tc++) {
+            N = sc.nextInt();
+            count = 0;
+
+            bfs();
+
+            System.out.println("#" + tc + " " + count);
+        }
+    }
+
+    static void bfs() {
+        Queue<long[]> q = new ArrayDeque<>();
+
+        for (int c = 0; c < N; c++) {
+            long bits = 0L;
+            bits = markPosOnBit(0, c, bits);        // 0행 c열에 퀸을 둠(열/대각 비트 세팅)
+            q.add(new long[]{0, c, bits});          // {현재 행, 현재 열, 누적 비트}
+        }
+
+        while (!q.isEmpty()) {
+            long[] curr = q.poll();
+            int cr = (int) curr[0];
+            long used = curr[2];
+
+            // 마지막 행까지 배치 완료
+            if (cr == N - 1) {
+                count++;
+                continue;
+            }
+
+            int nr = cr + 1; // 다음 행
+            for (int nc = 0; nc < N; nc++) {
+                if (checkPosByBit(nr, nc, used)) {
+                    long nb = markPosOnBit(nr, nc, used);
+                    q.add(new long[]{nr, nc, nb});
+                }
+            }
+        }
+    }
+
+    static long markPosOnBit(int r, int c, long bits) {
+        bits |= (1L << (COL_BASE + c));
+
+        int d1 = r - c + (N - 1); // 0..2N-2
+        int d2 = r + c;           // 0..2N-2
+        bits |= (1L << (D1_BASE + d1));
+        bits |= (1L << (D2_BASE + d2));
+        return bits;
+    }
+
+    static boolean checkPosByBit(int r, int c, long bits) {
+        long query = 0L;
+
+        // 열 충돌 검사
+        query |= (1L << (COL_BASE + c));
+
+        // 대각 충돌 검사
+        int d1 = r - c + (N - 1);
+        int d2 = r + c;
+        query |= (1L << (D1_BASE + d1));
+        query |= (1L << (D2_BASE + d2));
+
+        return (bits & query) == 0L;
+    }
 }

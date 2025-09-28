@@ -5,69 +5,59 @@ import java.util.Stack;
 
 public class Main {
     static int N;
-    static char[][] graph;
 
     // directions
     // up, right, down, left
     static int[] dr = { -1, 0, 1, 0 };
     static int[] dc = { 0, 1, 0, -1 };
-    
+
     static int normalCount;
     static int colorBlindCount;
-    
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         N = sc.nextInt();
-        
+
         // init graph
-        graph = new char[N][N];
+        char[][] grid = new char[N][N];
+        char[][] grid_colorBlind = new char[N][N];
+
         for (int r = 0; r < N; r++) {
             String row = sc.next();
-            graph[r] = row.toCharArray();
+            grid[r] = row.toCharArray();
+
+            for (int c = 0 ; c < N; c++ ) {
+                grid_colorBlind[r][c] = grid[r][c] == 'G' ? 'R' : grid[r][c];
+            }
         }
 
-        normalCount = 0;
-        colorBlindCount = 0;
+        int normal = countAreas(grid);
+        int colorBlind = countAreas(grid_colorBlind);
 
-        countBlocks();
-
-        System.out.println(normalCount + " " + colorBlindCount);
+        System.out.println(normal + " " + colorBlind);
     }
-    
-    static void countBlocks() {
-        // count block by normer person vision
+
+    static int countAreas(char[][] grid) {
+        int count = 0;
+
         boolean[][] visited = new boolean[N][N];
         for (int r = 0; r < N; r++) {
             for (int c = 0; c < N; c++) {
                 if (!visited[r][c]) {
-                    normalCount++;
+                    count++;
+                    floodFill(r, c, grid, visited);
                 }
-                dfs(r, c, visited);
             }
         }
-    
-        // count block by color blind vision
-        visited = new boolean[N][N];
-        for (int r = 0; r < N; r++) {
-            for (int c = 0; c < N; c++) {
-                if (!visited[r][c]) {
-                    colorBlindCount++;
-                }
-                dfs_colorBlind(r, c, visited);
-            }
-        }
-    
+
+        return count;
     }
 
     static boolean isInBounds(int r, int c) {
         return r >= 0 && r < N && c >= 0 && c < N;
     }
-    
-    
-    /*
-     * method for normal person's vision
-     */
-    static void dfs(int r, int c, boolean[][] visited) {
+
+    static void floodFill(int r, int c, char[][] grid, boolean[][] visited) {
         // init
         Stack<int[]> stack = new Stack<>();
 
@@ -77,61 +67,19 @@ public class Main {
             int[] curr = stack.pop();
             int cr = curr[0];
             int cc = curr[1];
-            visited[cr][cc] = true;
-            char color = graph[cr][cc];
-
-            for (int d = 0; d < dr.length; d++) {
-                int nr = cr + dr[d];
-                int nc = cc + dc[d];
-                
-                if (!isInBounds(nr, nc))
-                continue;
-                if (visited[nr][nc])
-                continue;
-
-                char nextColor = graph[nr][nc];
-                if (color != nextColor)
-                    continue;
-
-                stack.push(new int[] { nr, nc });
-            }
-        }
-
-    }
-
-    /*
-     * method for color blind person's vision
-     */
-    static void dfs_colorBlind(int r, int c, boolean[][] visited) {
-        // init
-        Stack<int[]> stack = new Stack<>();
-        Map<Character, Character> map = new HashMap<>();
-        map.put('R', 'R');
-        map.put('G', 'R');
-        map.put('B', 'B');
-
-        stack.push(new int[] { r, c });
-
-        while (!stack.isEmpty()) {
-            int[] curr = stack.pop();
-            int cr = curr[0];
-            int cc = curr[1];
-            visited[cr][cc] = true;
-            char color = map.get(graph[cr][cc]);
+            char color = grid[cr][cc];
 
             for (int d = 0; d < dr.length; d++) {
                 int nr = cr + dr[d];
                 int nc = cc + dc[d];
 
-                if (!isInBounds(nr, nc))
-                    continue;
-                if (visited[nr][nc])
-                    continue;
+                if (!isInBounds(nr, nc)) continue;
+                if (visited[nr][nc]) continue;
 
-                char nextColor = map.get(graph[nr][nc]);
-                if (color != nextColor)
-                    continue;
+                char nextColor = grid[nr][nc];
+                if (color != nextColor) continue;
 
+                visited[nr][nc] = true;
                 stack.push(new int[] { nr, nc });
             }
         }

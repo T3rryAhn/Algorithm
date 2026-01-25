@@ -17,9 +17,9 @@ class Solution {
             map.put(c, map.get(c) - 1);
         }
         
-        for (String key : map.keySet()) {
-            if (map.get(key) != 0) {
-                return key;
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            if (entry.getValue() != 0) {
+                return entry.getKey();
             }
         }
         

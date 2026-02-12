@@ -33,7 +33,7 @@
         3. 만약 processed >= n 이면
                -> 해당 시간은 가능
                -> 답 후보로 저장
-               -> 더 작은 시간 탐색 (high = mid - 1)
+               -> 더 작은 시간 탐색 (high = mid)
            아니면
                -> 시간이 부족
                -> 더 큰 시간 탐색 (low = mid + 1)
@@ -65,22 +65,22 @@ class Solution {
         
         // init low, mid, high
         long low = 1;
-        long mid = 1;
         long high = 0;
         
-        for (long time : times) {
-            high = Math.max(high, time);
+        for (int time : times) {
+            high = Math.max(high, (long) time);
         }
         high *= (long) n;
         
         
         // binary search
         while(low < high) {
-            mid = low + (high - low) / 2;
+            long mid = low + (high - low) / 2;
             long processed = 0;
             
-            for (long time : times) {
-                processed += mid / time;
+            for (int time : times) {
+                processed += mid / (long) time;
+                if (processed >= n) break;
             }
             
             if (processed >= n) {

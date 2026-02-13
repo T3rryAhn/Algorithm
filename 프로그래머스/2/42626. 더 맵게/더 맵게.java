@@ -27,25 +27,14 @@ class Solution {
         
         
         int count = 0;
-        boolean flag = true;
-        while(flag && !minHeap.isEmpty()) {
-            int curr = minHeap.poll();
-            
-            if (curr >= K) {
-                flag = false;
-                answer = count;
-                break;
-            }
-            
-            if (minHeap.isEmpty()) break;
-            
-            int tmp = curr + 2 * minHeap.poll();
-            minHeap.add(tmp);
-        
+
+        while(minHeap.size() >= 2 && minHeap.peek() < K) {
+            int a = minHeap.poll();
+            int b = minHeap.poll();
+            minHeap.add(a + 2 * b);
             count++;
         }
         
-        
-        return answer;
+        return !minHeap.isEmpty() && minHeap.peek() >= K ? count : -1;
     }
 }

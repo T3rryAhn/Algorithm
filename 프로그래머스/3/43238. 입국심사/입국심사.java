@@ -12,7 +12,6 @@
             sum(T / times[i])
 
         이 값은 T가 증가할수록 절대 감소하지 않는다.
-        (단조 증가 함수)
 
         목표:
             sum(T / times[i]) >= n 을 만족하는
@@ -63,35 +62,25 @@ class Solution {
     public long solution(int n, int[] times) {
         long answer = 0;
         
-        // init low, mid, high
-        long low = 1;
-        long high = 0;
+        long left = 0, right = 0;
+        long maxValue = 0;
+        for (long t : times) maxValue = Math.max(maxValue, t);
+        right = maxValue * n;
         
-        for (int time : times) {
-            high = Math.max(high, (long) time);
-        }
-        high *= (long) n;
-        
-        
-        // binary search
-        while(low < high) {
-            long mid = low + (high - low) / 2;
+        while (left < right) {
+            long mid = left + (right - left) / 2;
+
             long processed = 0;
-            
-            for (int time : times) {
-                processed += mid / (long) time;
-                if (processed >= n) break;
-            }
+            for (long t : times) processed += mid / t;
             
             if (processed >= n) {
-                high = mid;
+                answer = mid;
+                right = mid;
             }
             else {
-                low = mid + 1;
+                left = mid + 1;
             }
         }
-        
-        answer = low;
         
         return answer;
     }

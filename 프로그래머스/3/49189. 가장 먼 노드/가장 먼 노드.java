@@ -5,7 +5,7 @@
 노드 개수 n : 2 <= n <= 2*10^4
 간선 양방향 e : 1<= e <= 5*10^4
 
-1번 출발 다익스트라 기록
+1번 출발 bfs 기록
 O(e * log(v))
 time ok
 
@@ -33,7 +33,7 @@ class Solution {
         int answer = 0;
         
         // run dijkstra
-        dijkstra(1);
+        bfs(1);
         
         // count far dist
         int maxDist = 0;
@@ -48,23 +48,22 @@ class Solution {
             }
         }
         
-        System.out.println(Arrays.toString(dist));
         return answer;
     }
     
-    void dijkstra(int start) {
+    void bfs(int start) {
         dist[start] = 0;
-        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Queue<Integer> queue = new ArrayDeque<>();
         
-        pq.add(start);
+        queue.add(start);
         
-        while(!pq.isEmpty()) {
-            int curr = pq.poll();
+        while(!queue.isEmpty()) {
+            int curr = queue.poll();
             
             for (int next : adj[curr]) {
                 if (dist[next] > dist[curr] + 1) {
                     dist[next] = dist[curr] + 1;
-                    pq.add(next);
+                    queue.add(next);
                 }
             }
         }
